@@ -13,15 +13,16 @@ Route::get('/', function () {
 Route::post('telegram/webhook', TelegramWebhookController::class);
 
 
-Route::get('/test', function () {
+// Route::get('/test', function () {
 
-    $response = Telegram::setWebhook(['url' => env('TELEGRAM_WEBHOOK_URL')]);
+//         // $response = Telegram::setWebhook(['url' => env('TELEGRAM_WEBHOOK_URL')]);
 
-    Telegram::bot()->sendMessage([
-        'chat_id' => env('LOAI_CHAT_ID'),
-        'text' => 'Webhook Started',
-    ]);
+//     ;
+//     // Telegram::bot()->sendMessage([
+//     //     'chat_id' => env('LOAI_CHAT_ID'),
+//     //     'text' => 'Webhook Started',
+//     // ]);
 
 
-    return 'success';
-});
+//     return json_decode(Telegram::getWebhookInfo());
+// });
