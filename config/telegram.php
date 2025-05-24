@@ -1,6 +1,9 @@
 <?php
 
 use Telegram\Bot\Commands\HelpCommand;
+use App\Telegram\Commands\StartCommand;
+use App\Telegram\Commands\ProjectsCommand;
+use App\Telegram\Commands\CreateProjectCommand;
 
 return [
     /*
@@ -131,6 +134,9 @@ return [
     */
     'commands' => [
         HelpCommand::class,
+        StartCommand::class,
+        ProjectsCommand::class,
+        CreateProjectCommand::class,
     ],
 
     /*
@@ -191,8 +197,7 @@ return [
                 'status', // Shared Command Name.
                 'Acme\Project\Commands\BotCommand' // Full Path to Command Class.
            ],
-        */
-    ],
+        */],
 
     /*
     |--------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AsanaController;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use App\Http\Controllers\TelegramWebhookController;
 
@@ -10,7 +11,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('telegram/webhook', TelegramWebhookController::class);
+
+Route::prefix('telegram')->group(function () {
+    Route::get('/install-webhook', [TelegramWebhookController::class, 'installWebhook']);
+    Route::post('/webhook', [TelegramWebhookController::class, 'webhook']);
+});
+
+
+
+Route::prefix('asana')->group(function () {
+    Route::get('/install-webhook', [AsanaController::class, 'installWebhook']);
+    Route::post('/webook', [AsanaController::class, 'webhook']);
+});
 
 
 // Route::get('/test', function () {
