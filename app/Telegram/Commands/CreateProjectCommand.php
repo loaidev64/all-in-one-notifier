@@ -5,6 +5,7 @@ namespace App\Telegram\Commands;
 use App\Asana\Client;
 use App\Asana\DTOs\ProjectDTO;
 use Telegram\Bot\Commands\Command;
+use Illuminate\Support\Facades\Cache;
 
 class CreateProjectCommand extends Command
 {
@@ -27,9 +28,10 @@ class CreateProjectCommand extends Command
         $this->replyWithMessage([
             'text' => "
             a new project was created with info : 
-                id: {$project->id},
-                name: {$project->name}
+            id: {$project->id},
+            name: {$project->name}
                 ",
         ]);
+        Cache::forget("projects_{$this->getUpdate()->getMessage()->getChat()->getId()}");
     }
 }
