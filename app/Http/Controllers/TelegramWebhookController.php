@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TaskEvent;
 use App\Events\ProjectEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Events\GetTasksForProjectEvent;
 use App\Telegram\Commands\StartCommand;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use App\Listeners\Project\SendProjectKeyboardActions;
 
 class TelegramWebhookController extends Controller
 {
@@ -29,8 +32,6 @@ class TelegramWebhookController extends Controller
         // First, process known commands
         Telegram::bot()->commandsHandler(true);
 
-        Log::debug("The message is $text");
-
         // Early return if it's a command like /start or /projects
         if (str_starts_with($text, '/')) {
             return;
@@ -44,6 +45,20 @@ class TelegramWebhookController extends Controller
 
         if ($matchedProject) {
             event(new ProjectEvent($matchedProject, $chatId));
+            return;
+        }
+
+        if ($project = Cache::get("selected_project_{$chatId}")) {
+            if ($text == SendProjectKeyboardActions::DisplayTasks) {
+                event(new GetTasksForProjectEvent($project, $chatId));
+                return;
+            }
+        }
+
+        if ($tasks = Cache::get("tasks_{$chatId}")) {
+            $task = collect($tasks)->firstWhere('name', $text);
+            event(new TaskEvent($task, $chatId));
+            return;
         }
 
         return;

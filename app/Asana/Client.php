@@ -2,6 +2,7 @@
 
 namespace App\Asana;
 
+use App\Asana\APIs\TaskApi;
 use App\Asana\APIs\ProjectApi;
 use App\Asana\APIs\WorkspaceApi;
 use Illuminate\Support\Facades\Http;
@@ -10,6 +11,7 @@ class Client
 {
     use ProjectApi;
     use WorkspaceApi;
+    use TaskApi;
 
     private $baseUrl = 'https://app.asana.com/api/1.0/';
 

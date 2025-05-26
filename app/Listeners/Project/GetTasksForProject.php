@@ -2,25 +2,16 @@
 
 namespace App\Listeners\Project;
 
-use App\Events\ProjectEvent;
+use App\Asana\Client;
 use Telegram\Bot\Keyboard\Keyboard;
 use Illuminate\Support\Facades\Cache;
+use App\Events\GetTasksForProjectEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SendProjectKeyboardActions
+class GetTasksForProject
 {
-
-    const DisplayTasks = 'Display tasks';
-
-    public static function actions(): array
-    {
-        return [
-            SendProjectKeyboardActions::DisplayTasks,
-        ];
-    }
-
     /**
      * Create the event listener.
      */
@@ -32,29 +23,27 @@ class SendProjectKeyboardActions
     /**
      * Handle the event.
      */
-    public function handle(ProjectEvent $event): void
+    public function handle(GetTasksForProjectEvent $event): void
     {
         $telegram = Telegram::bot();
-        Cache::put("selected_project_{$event->chatId}", $event->project, now()->addMinutes(5));
+        $asana = new Client;
+        $tasks =
+            Cache::remember("tasks_{$event->chatId}", now()->addMinutes(5), fn() => $asana->getTasks($event->project));
         $keyboard =  Keyboard::make()
             ->setResizeKeyboard(true)
             ->setOneTimeKeyboard(true);
         $row = [];
-        foreach (SendProjectKeyboardActions::actions() as $action) {
-            $row[] = Keyboard::button($action);
+        foreach ($tasks as $task) {
+            $row[] = Keyboard::button($task->name);
             if (count($row) == 2) {
                 $keyboard->row($row);
                 $row = [];
             }
         }
-        if (!empty($row)) {
-            $keyboard->row($row);
-        }
         $telegram->sendMessage([
             'chat_id' => $event->chatId,
-            'text' => "Choose actions for the project: *{$event->project->name}*",
+            'text' => "Choose task:",
             'reply_markup' => $keyboard,
-            'parse_mode' => 'Markdown',
         ]);
     }
 }

@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\ForceAcceptJson;
 use App\Http\Controllers\AsanaController;
-use Telegram\Bot\Laravel\Facades\Telegram;
 use App\Http\Controllers\TelegramWebhookController;
 
 
@@ -14,7 +14,7 @@ Route::get('/', function () {
 
 Route::prefix('telegram')->group(function () {
     Route::get('/install-webhook', [TelegramWebhookController::class, 'installWebhook']);
-    Route::post('/webhook', [TelegramWebhookController::class, 'webhook']);
+    Route::post('/webhook', [TelegramWebhookController::class, 'webhook'])->middleware(ForceAcceptJson::class);
 });
 
 
